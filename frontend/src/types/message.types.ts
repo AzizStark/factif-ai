@@ -13,7 +13,7 @@ export interface CompleteTask {
 
 export interface PerformAction {
   type: "perform_action";
-  action: string;
+  actionType: string;
   url?: string;
   coordinate?: string;
   text?: string;

@@ -73,7 +73,7 @@ ${response.omniParserResult ? `<omni_parser>${JSON.stringify(response.omniParser
         return { text: chunk, actionResult };
       }
     }
-
+ 
     // Return just the text if no action was performed
     return { text: chunk };
   }

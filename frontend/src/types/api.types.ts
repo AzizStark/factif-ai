@@ -22,7 +22,7 @@ export interface ChatResponse {
 }
 
 export interface Action {
-  action: string;
+  actionType: string;
   url?: string;
   coordinate?: string;
   text?: string;

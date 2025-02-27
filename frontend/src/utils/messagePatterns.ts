@@ -14,7 +14,7 @@ export class MessagePatterns {
     completeTask:
       /<complete_task>[\s\n]*<result>([\s\S]*?)<\/result>(?:[\s\n]*<command>(.*?)<\/command>)?[\s\n]*<\/complete_task>/s,
     performAction:
-      /<perform_action>[\s\S]*?<action>(.*?)<\/action>(?:[\s\S]*?<url>(.*?)<\/url>)?(?:[\s\S]*?<coordinate>(.*?)<\/coordinate>)?(?:[\s\S]*?<text>(.*?)<\/text>)?(?:[\s\S]*?<key>(.*?)<\/key>)?[\s\S]*?<\/perform_action>/s,
+      /<perform_action>[\s\S]*?<action>(.*?)<\/action>(?:[\s\S]*?<url>(.*?)<\/url>)?(?:[\s\S]*?<coordinates>(.*?)<\/coordinates>)?(?:[\s\S]*?<text>(.*?)<\/text>)?(?:[\s\S]*?<key>(.*?)<\/key>)?[\s\S]*?<\/perform_action>/s,
     actionResult:
       /<perform_action_result>[\s\S]*?<action_status>(success|error)<\/action_status>[\s\S]*?<action_message>(.*?)<\/action_message>(?:[\s\S]*?<screenshot>(.*?)<\/screenshot>)?(?:[\s\S]*?<omni_parser>(.*?)<\/omni_parser>)?[\s\S]*?<\/perform_action_result>/s,
     exploreOutput:
@@ -141,7 +141,7 @@ export class MessagePatterns {
         length: fullMatch.length,
         part: {
           type: "perform_action",
-          action: actionMatch[1],
+          actionType: actionMatch[1],
           ...(actionMatch[2] && { url: actionMatch[2] }),
           ...(actionMatch[3] && { coordinate: actionMatch[3] }),
           ...(actionMatch[4] && { text: actionMatch[4] }),
@@ -211,11 +211,19 @@ export class MessagePatterns {
     const match = text.match(this.patterns.performAction);
     if (!match) return null;
 
+    let coordinate;
+    if (match[3]) {
+      const parts = match[3].split(",").map((part) => part.trim());
+      if (parts.length === 2) {
+        coordinate = { x: Number(parts[0]), y: Number(parts[1]) };
+      }
+    }
+
     return {
       type: "perform_action",
-      action: match[1],
+      actionType: match[1],
       ...(match[2] && { url: match[2] }),
-      ...(match[3] && { coordinate: match[3] }),
+      ...(coordinate && { coordinate }),
       ...(match[4] && { text: match[4] }),
       ...(match[5] && { key: match[5] }),
     };
